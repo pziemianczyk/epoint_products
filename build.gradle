@@ -1,0 +1,23 @@
+group 'wdrozenie_pziemianczyk'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.21'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+}
+war {
+    from 'webapp' // adds a file-set to the root of the archive
+    //webInf 'main/classpath'
+    webXml = file('WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
+}
