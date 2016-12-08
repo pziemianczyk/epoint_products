@@ -13,6 +13,7 @@
             <br>
         </c:forEach>
 
+        //test komentarz do commitu
         <a href="/products/edit?action=add_product">Add product</a>
     </body>
 </html>
