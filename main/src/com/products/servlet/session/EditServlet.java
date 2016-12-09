@@ -1,5 +1,6 @@
-package com.products;
+package com.products.servlet.session;
 
+import com.products.ProductManager;
 import com.products.model.Product;
 import com.products.model.validator.ProductValidator;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 
 import static com.products.APP_CONSTANTS.EDITABLE_PRODUCT;
 import static com.products.APP_CONSTANTS.JSP;
-import static com.products.ListServlet.JSP_LIST;
+import static com.products.servlet.session.ListServlet.JSP_LIST;
 
 /**
  * Created by pziemianczyk on 05.12.16.
@@ -28,10 +29,28 @@ public class EditServlet extends HttpServlet {
     private Product product;
     private Boolean addingNew = false;
 
+    private Integer editCounter = 0;
+
+    public Integer getEditCounter() {
+        return editCounter;
+    }
+
+    public void setEditCounter(Integer editCounter) {
+        this.editCounter = editCounter;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+    }
+
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String productId = req.getParameter("productId");
         System.out.println("EditServlet doGet start, productId is: " + productId);
+
+        this.editCounter++;
+        req.setAttribute("editCounter", this.editCounter);
 
         if(productId != null) {
             ProductManager productManager = (ProductManager) req.getSession().getAttribute("productManager");
@@ -72,6 +91,9 @@ public class EditServlet extends HttpServlet {
             String action = req.getParameter("action");
             System.out.println("Action: " + action);
 
+            this.editCounter++;
+            req.setAttribute("editCounter", this.editCounter);
+
             if(action != null && "save_product".equals(action)) {
                 String name = req.getParameter("productName");
                 String price = req.getParameter("productPrice");
@@ -97,12 +119,6 @@ public class EditServlet extends HttpServlet {
                 }
             }
 
-            ProductManager productManager = (ProductManager) req.getSession().getAttribute ("productManager"); //req.getSession().getAttribute("memoryProductImpl");
-
-            System.out.println("Product manager " + productManager);
-
-            System.out.println("Size of products: " + productManager.getProductsList().size());
-            req.setAttribute("products", productManager.getProductsList());
             RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(url);
             requestDispatcher.forward(req, resp);
         } catch (ServletException e){
@@ -126,7 +142,9 @@ public class EditServlet extends HttpServlet {
         updateProduct(name, price, product);
 
         ProductManager productManager = (ProductManager) req.getSession().getAttribute("productManager");
-        productManager.insertProduct(product);
+        if(productManager != null) {
+            productManager.insertProduct(product);
+        }
     }
 
     private void updateProduct(String name, String price, Product product) {
