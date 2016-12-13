@@ -46,7 +46,7 @@ public class ListServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         logger.info("Initializing ListServlet");
-        productManager =  new ProductDatabaseManagerImpl();// new ProductMemoryManagerImpl();
+        productManager =  new ProductDatabaseManagerImpl();
         getServletContext().setAttribute("servletContextCounter",0);
     }
 

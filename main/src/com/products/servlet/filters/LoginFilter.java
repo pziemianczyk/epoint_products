@@ -53,6 +53,7 @@ public class LoginFilter extends HttpServlet implements Filter{
 
         if("logout".equals(req.getParameter("action"))){
             req.getSession().setAttribute("userId", null);
+            req.getSession().invalidate();
         }
         RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(url);
         requestDispatcher.forward(req, resp);
