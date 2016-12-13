@@ -1,0 +1,19 @@
+CREATE DATABASE products;
+
+\connect products
+
+create schema pziemianczyk;
+create table pziemianczyk.product(id INTEGER PRIMARY KEY, name TEXT, price NUMERIC);
+\d+ pziemianczyk.product //opis bazy danych
+
+create sequence product_seq;
+alter table pziemianczyk.product alter COLUMN id set default nextval('product_seq');
+
+create user john with password '123';
+
+GRANT USAGE ON SCHEMA pziemianczyk TO john;
+GRANT INSERT ON pziemianczyk.product TO john;
+GRANT UPDATE ON pziemianczyk.product TO john;
+GRANT DELETE ON pziemianczyk.product TO john;
+
+insert into pziemianczyk.product(name, price) values ('produkt 1', 100.25);
