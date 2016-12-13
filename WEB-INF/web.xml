@@ -14,14 +14,8 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-    <!--
-    <servlet>
-        <servlet-name>Products</servlet-name>
-        <servlet-class>com.products.servlet.session.ListServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Products</servlet-name>
-        <url-pattern>/list</url-pattern>
-    </servlet-mapping>
-    -->
+    <session-config>
+        <session-timeout>1</session-timeout>
+    </session-config>
+
 </web-app>
