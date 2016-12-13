@@ -24,7 +24,7 @@
 
     </appender>
 
-    <logger name="com.products.ListServlet" level="debug"
+    <logger name="com.products.servlet.session.ListServlet" level="debug"
             additivity="false">
         <appender-ref ref="FILE-AUDIT" />
     </logger>

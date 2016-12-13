@@ -63,7 +63,13 @@ public class ProductMemoryManagerImpl implements ProductManager {
     }
 
     public void updateProduct(Product product){
-
+        Product productToUpdate = getProductByPK(product.getPk());
+        productToUpdate.setName(product.getName());
+        try {
+            productToUpdate.setPrice(Double.valueOf(product.getPrice()));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteProduct(Product product){

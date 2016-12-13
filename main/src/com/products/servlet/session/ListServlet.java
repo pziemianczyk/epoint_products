@@ -2,6 +2,7 @@ package com.products.servlet.session;
 
 import com.products.ProductManager;
 import com.products.model.Product;
+import com.products.model.data.ProductDatabaseManagerImpl;
 import com.products.model.data.ProductMemoryManagerImpl;
 
 import javax.servlet.RequestDispatcher;
@@ -25,9 +26,9 @@ import static com.products.APP_CONSTANTS.JSP;
             urlPatterns = "/list")
 public class ListServlet extends HttpServlet {
 
-    final Logger logger = LoggerFactory.getLogger(ListServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(ListServlet.class);
 
-    private ProductMemoryManagerImpl productManager;
+    private ProductManager productManager;
 
     public static final String JSP_LIST = JSP + "list.jsp";
 
@@ -45,7 +46,7 @@ public class ListServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         logger.info("Initializing ListServlet");
-        productManager = new ProductMemoryManagerImpl();
+        productManager =  new ProductDatabaseManagerImpl();// new ProductMemoryManagerImpl();
         getServletContext().setAttribute("servletContextCounter",0);
     }
 
@@ -84,11 +85,11 @@ public class ListServlet extends HttpServlet {
                 }
             } else if (request.getParameter("productId") != null) {
                 url = EditServlet.JSP_EDIT;
-                System.out.println("Edit product by productId " + request.getParameter("productId"));
+                logger.info("Edit product by productId " + request.getParameter("productId"));
             }
             else {
                 request.setAttribute("products", productManager.getProductsList());
-                System.out.println("No productId.");
+                logger.info("No productId.");
             }
 
             request.getSession().setAttribute("products", productManager.getProductsList());

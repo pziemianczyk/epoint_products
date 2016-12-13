@@ -3,6 +3,8 @@ package com.products.servlet.session;
 import com.products.ProductManager;
 import com.products.model.Product;
 import com.products.model.validator.ProductValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -24,6 +26,8 @@ import static com.products.servlet.session.ListServlet.JSP_LIST;
 public class EditServlet extends HttpServlet {
 
     public static final String JSP_EDIT = JSP + "edit.jsp";
+
+    private final Logger logger = LoggerFactory.getLogger(EditServlet.class);
 
     private String labelAction;
     private Product product;
@@ -47,7 +51,7 @@ public class EditServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String productId = req.getParameter("productId");
-        System.out.println("EditServlet doGet start, productId is: " + productId);
+        logger.info("EditServlet doGet start, productId is: " + productId);
 
         this.editCounter++;
         req.setAttribute("editCounter", this.editCounter);
@@ -65,7 +69,7 @@ public class EditServlet extends HttpServlet {
             requestDispatcher.forward(req, resp);
         } else {
             String action = req.getParameter("action");
-            System.out.println("Action: " + action);
+            logger.info("Action: " + action);
             if("add_product".equals(action)){
                 this.addingNew = true;
                 this.labelAction = "Add new";
@@ -86,10 +90,9 @@ public class EditServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try{
-            String url = JSP_LIST;
 
             String action = req.getParameter("action");
-            System.out.println("Action: " + action);
+            logger.info("Action: " + action);
 
             this.editCounter++;
             req.setAttribute("editCounter", this.editCounter);
@@ -114,13 +117,12 @@ public class EditServlet extends HttpServlet {
                     req.setAttribute("labelAction", this.labelAction);
                     RequestDispatcher rd = getServletContext().getRequestDispatcher(JSP_EDIT);
                     rd.forward(req, resp);
-                    System.out.println("Forward to JSP_EDIT");
+                    logger.info("Forward to JSP_EDIT");
                     return;
                 }
             }
 
-            RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher(url);
-            requestDispatcher.forward(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/list");
         } catch (ServletException e){
             e.printStackTrace();
         }
@@ -130,7 +132,7 @@ public class EditServlet extends HttpServlet {
         Product product = (Product) req.getSession().getAttribute(EDITABLE_PRODUCT);
         if (product != null) {
             if (product.getPk() != null && !"".equals(product.getPk())) {
-                updateProduct(name, price, product);
+                updateProduct(req, name, price, product);
             } else {
                 addNewProduct(req, name, price);
             }
@@ -139,7 +141,13 @@ public class EditServlet extends HttpServlet {
 
     private void addNewProduct(HttpServletRequest req, String name, String price) {
         Product product = new Product();
-        updateProduct(name, price, product);
+
+        product.setName(name);
+        try {
+            product.setPrice(Double.valueOf(price));
+        } catch (NumberFormatException e) {
+            logger.error("Add new product, wrong price format", e);
+        }
 
         ProductManager productManager = (ProductManager) req.getSession().getAttribute("productManager");
         if(productManager != null) {
@@ -147,12 +155,16 @@ public class EditServlet extends HttpServlet {
         }
     }
 
-    private void updateProduct(String name, String price, Product product) {
+    private void updateProduct(HttpServletRequest req, String name, String price, Product product) {
+        ProductManager productManager = (ProductManager) req.getSession().getAttribute("productManager");
         product.setName(name);
         try {
             product.setPrice(Double.valueOf(price));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            logger.error("Update product, wrong price format", e);
+        }
+        if(productManager != null) {
+            productManager.updateProduct(product);
         }
     }
 }
