@@ -2,6 +2,8 @@ package com.products.model.data;
 
 import com.products.ProductManager;
 import com.products.model.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,9 +14,15 @@ import java.util.List;
  */
 public class ProductMemoryManagerImpl implements ProductManager {
 
+    private final Logger logger = LoggerFactory.getLogger(ProductMemoryManagerImpl.class);
+
     private List<Product> products = new ArrayList<>();
 
     public ProductMemoryManagerImpl(){
+        addDefaultProducts();
+    }
+
+    private void addDefaultProducts() {
         Product product = new Product();
         product.setName("First product");
         product.setPrice(120.5);
@@ -33,19 +41,13 @@ public class ProductMemoryManagerImpl implements ProductManager {
     }
 
     public Product getProductByPK(Integer pk) {
-        for(Iterator<Product> it = this.products.iterator(); it.hasNext();){
-            Product product = it.next();
-            if(product.getPk().equals(pk)){
-                return product;
-            }
-        }
-        return null;
+        return this.products.stream().filter(product -> product.getPk().equals(pk)).findFirst().get();
     }
 
     public void insertProduct(Product product){
         computeAndSetPK(product);
         this.products.add(product);
-        System.out.println("New product was added");
+        logger.info("New product was added");
     }
 
     private Integer computeAndSetPK(Product newProduct) {
@@ -68,13 +70,13 @@ public class ProductMemoryManagerImpl implements ProductManager {
         try {
             productToUpdate.setPrice(Double.valueOf(product.getPrice()));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            logger.error("Update product, wrong price", e);
         }
     }
 
     public void deleteProduct(Product product){
         if(this.products.remove(product)){
-            System.out.println("Product " + product + " was deleted.");
+            logger.info("Product " + product + " was deleted.");
         }
     }
 }

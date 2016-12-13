@@ -1,4 +1,4 @@
-package com.products.test.db;
+package com.products.model.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +19,6 @@ public class PostgresqlTest {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
-            System.exit(0);
         } finally {
             System.out.println("Opened database successfully");
             if(c != null){
